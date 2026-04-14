@@ -1,6 +1,7 @@
 package com.example.xddemo.data.repository
 
 import android.util.Log
+import com.example.xddemo.data.model.ApiResult
 import com.example.xddemo.data.dao.ThreadDao
 import com.example.xddemo.data.model.ReplyEntity
 import com.example.xddemo.data.model.ThreadEntity
@@ -28,35 +29,46 @@ class ThreadRepository(
         threadDao.insertReplies(replies)
     }
 
-    suspend fun saveAllThreadPage(id: Int) {
-        if (threadDao.getSingleThread(id) != null) {
-            updateThread(id)
-            return
+    suspend fun saveAllThreadPage(id: Int): ApiResult<Unit> {
+        return try {
+            if (threadDao.getSingleThread(id) != null) {
+                return updateThread(id)
+            }
+            val threadPage = xDaoApiService.getThreadPage(id = id, page = 1)
+            threadDao.insertThread(threadPage.toThreadEntity())
+            val threadPageCount = max(1, ceil(threadPage.replyCount / 19.0).toInt())
+            for (page in 1..threadPageCount) {
+                saveOneThreadPage(id, page)
+                delay(500L)
+            }
+            threadDao.updateDownloadStatus(id, true)
+            ApiResult.Success(Unit)
+        } catch (e: Exception) {
+            Log.e("ThreadRepository", "saveAllThreadPage failed for id=$id", e)
+            ApiResult.Error("下载失败: ${e.localizedMessage ?: "网络错误"}", e)
         }
-        val threadPage = xDaoApiService.getThreadPage(id = id, page = 1)
-        threadDao.insertThread(threadPage.toThreadEntity())
-        val threadPageCount = max(1, ceil(threadPage.replyCount / 19.0).toInt())
-        for (page in 1..threadPageCount) {
-            saveOneThreadPage(id, page)
-            delay(500L)
-        }
-        threadDao.updateDownloadStatus(id, true)
     }
 
-    suspend fun updateThread(id: Int) {
-        threadDao.updateDownloadStatus(id, false)
-        val newerThreadPage = xDaoApiService.getThreadPage(id = id, page = 1)
-        threadDao.updateThread(newerThreadPage.toThreadEntity())
-        val maxThreadPage = max(1, ceil(newerThreadPage.replyCount / 19.0).toInt())
-        val newStartIndex = threadDao.getReplyCountByThreadId(id) + 1
-        val newStartPage = max(1, ceil(newStartIndex / 19.0).toInt())
-        Log.d("updateThreadInRepository","newStartPage: $newStartPage maxThreadPage: $maxThreadPage")
-        for (page in newStartPage..maxThreadPage) {
-            saveOneThreadPage(id, page)
-            Log.d("updateThreadInRepository","curPage: $page")
-            delay(500L)
+    suspend fun updateThread(id: Int): ApiResult<Unit> {
+        return try {
+            threadDao.updateDownloadStatus(id, false)
+            val newerThreadPage = xDaoApiService.getThreadPage(id = id, page = 1)
+            threadDao.updateThread(newerThreadPage.toThreadEntity())
+            val maxThreadPage = max(1, ceil(newerThreadPage.replyCount / 19.0).toInt())
+            val newStartIndex = threadDao.getReplyCountByThreadId(id) + 1
+            val newStartPage = max(1, ceil(newStartIndex / 19.0).toInt())
+            Log.d("updateThreadInRepository","newStartPage: $newStartPage maxThreadPage: $maxThreadPage")
+            for (page in newStartPage..maxThreadPage) {
+                saveOneThreadPage(id, page)
+                Log.d("updateThreadInRepository","curPage: $page")
+                delay(500L)
+            }
+            threadDao.updateDownloadStatus(id, true)
+            ApiResult.Success(Unit)
+        } catch (e: Exception) {
+            Log.e("ThreadRepository", "updateThread failed for id=$id", e)
+            ApiResult.Error("更新失败: ${e.localizedMessage ?: "网络错误"}", e)
         }
-        threadDao.updateDownloadStatus(id, true)
     }
 
     fun getThreadWithReplies(threadId: Int): Flow<ThreadWithReplies> {
@@ -70,8 +82,9 @@ class ThreadRepository(
     }
 
     suspend fun getSingleReply(replyId: Int): ReplyEntity? {
-        if (threadDao.getSingleThread(replyId) != null) {
-            return threadDao.getSingleThread(replyId)!!.toReplyEntity()
+        val thread = threadDao.getSingleThread(replyId)
+        if (thread != null) {
+            return thread.toReplyEntity()
         }
         return threadDao.getSingleReply(replyId)
     }

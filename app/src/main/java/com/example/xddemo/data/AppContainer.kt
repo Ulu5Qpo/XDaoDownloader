@@ -10,17 +10,20 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 interface AppContainer {
     val threadRepository: ThreadRepository
+    val cookieInterceptor: AddCookieInterceptor
 }
 
 class DefaultAppContainer(
     private val context: Context,
-    private val cookie: String
+    cookieInterceptor: AddCookieInterceptor
 ) : AppContainer {
+
+    override val cookieInterceptor: AddCookieInterceptor = cookieInterceptor
 
     private val baseUrl = "https://api.nmb.best/"
 
     private val client = OkHttpClient.Builder()
-        .addInterceptor(AddCookieInterceptor(cookie))
+        .addInterceptor(cookieInterceptor)
         .build()
 
     private val retrofit = Retrofit.Builder()

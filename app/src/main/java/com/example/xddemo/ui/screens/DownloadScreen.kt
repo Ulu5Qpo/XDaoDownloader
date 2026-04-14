@@ -71,7 +71,8 @@ fun DownloadScreen(
                 items(downloadList) { downloadState ->
                     DownloadCard(
                         threadId = downloadState.threadId,
-                        status = downloadState.status
+                        status = downloadState.status,
+                        errorMessage = downloadState.errorMessage
                     )
                 }
             }

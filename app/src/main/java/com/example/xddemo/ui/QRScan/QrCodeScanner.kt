@@ -27,11 +27,12 @@ fun QrCodeScanner(
         val intentResult = IntentIntegrator.parseActivityResult(
             result.resultCode, result.data
         )
-        scannedResult = intentResult?.contents ?: "Cancelled"
-
-        val cookie = JSONObject(scannedResult!!).optString("cookie")
-        saveCookie("userhash=$cookie")
-        Log.d("QrCodeScanner", "cookie Result: $cookie")
+        scannedResult = intentResult?.contents
+        if (scannedResult != null && scannedResult != "Cancelled") {
+            val cookie = JSONObject(scannedResult).optString("cookie")
+            saveCookie("userhash=$cookie")
+            Log.d("QrCodeScanner", "cookie Result: $cookie")
+        }
     }
 
     Row(

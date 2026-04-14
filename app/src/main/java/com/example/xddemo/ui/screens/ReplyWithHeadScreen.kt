@@ -100,12 +100,14 @@ fun ReplyWithHeadScreen(
     }
 
     LaunchedEffect(threadWithReplies) {
-        if (isInitialEntry.value && threadWithReplies != null && scrollToReplyId != null) {
-            val index = threadWithReplies!!.replies.indexOfFirst { it.id == scrollToReplyId } + 1
-            Log.d("scrollReplyDetail", "scrollToReplyId: $scrollToReplyId, index: $index")
-            if (index >= 0) {
-                listState.scrollToItem(index)
-                isInitialEntry.value = false
+        threadWithReplies?.let { currentThreadWithReplies ->
+            if (isInitialEntry.value && scrollToReplyId != null) {
+                val index = currentThreadWithReplies.replies.indexOfFirst { it.id == scrollToReplyId } + 1
+                Log.d("scrollReplyDetail", "scrollToReplyId: $scrollToReplyId, index: $index")
+                if (index >= 0) {
+                    listState.scrollToItem(index)
+                    isInitialEntry.value = false
+                }
             }
         }
     }
@@ -214,17 +216,20 @@ fun ReplyWithHeadScreen(
                             modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp)
                         )
                     } else {
-                        ReplyCard(
-                            poster = threadWithReplies!!.thread.userHash,
-                            replyEntity = replyEntity,
-                            onImageClick = navigateToImageView,
-                            onQuoteClick = { quoteId ->
-                                scope.launch {
-                                    val nestedQuoteReply = viewModel.getSingleReply(quoteId.toInt())
-                                    quoteStack.add(nestedQuoteReply)  // 将新的引用加入栈
+                        val currentThread = threadWithReplies
+                        if (currentThread != null) {
+                            ReplyCard(
+                                poster = currentThread.thread.userHash,
+                                replyEntity = replyEntity,
+                                onImageClick = navigateToImageView,
+                                onQuoteClick = { quoteId ->
+                                    scope.launch {
+                                        val nestedQuoteReply = viewModel.getSingleReply(quoteId.toInt())
+                                        quoteStack.add(nestedQuoteReply)  // 将新的引用加入栈
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
 
                 }

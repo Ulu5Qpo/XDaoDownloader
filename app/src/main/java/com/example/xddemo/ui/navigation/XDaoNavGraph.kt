@@ -84,9 +84,9 @@ fun XDaoNavGraph(
                 type = NavType.IntType
             })
         ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getInt("id")
+            val id = requireNotNull(backStackEntry.arguments?.getInt("id"))
             ReplyWithHeadScreen(
-                threadId = id!!,
+                threadId = id,
                 navigateBack = { navController.navigateUp() },
                 navigateToImageView = {
                     val encodedUrl = Uri.encode(it)
@@ -102,11 +102,11 @@ fun XDaoNavGraph(
                 navArgument("replyId") { type = NavType.IntType }
             )
         ) { backStackEntry ->
-            val threadId = backStackEntry.arguments?.getInt("threadId")
+            val threadId = requireNotNull(backStackEntry.arguments?.getInt("threadId"))
             val replyId = backStackEntry.arguments?.getInt("replyId")
 
             ReplyWithHeadScreen(
-                threadId = threadId!!,
+                threadId = threadId,
                 scrollToReplyId = replyId,
                 navigateBack = { navController.navigateUp() },
                 navigateToImageView = {
@@ -139,9 +139,8 @@ fun XDaoNavGraph(
                 type = NavType.StringType
             })
         ) { backStackEntry ->
-            val encodedUrl = backStackEntry.arguments?.getString("url")
-            val url = Uri.decode(encodedUrl)
-            ImageViewScreen(url = url!!)
+            val url = Uri.decode(requireNotNull(backStackEntry.arguments?.getString("url")))
+            ImageViewScreen(url = url)
         }
 
         composable(route = "download") {

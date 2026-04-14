@@ -11,6 +11,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,7 +21,8 @@ import com.example.xddemo.ui.viewmodel.DownloadStatus
 @Composable
 fun DownloadCard(
     threadId: Int,
-    status: DownloadStatus
+    status: DownloadStatus,
+    errorMessage: String = ""
 ) {
     Surface(
         elevation = 1.dp,
@@ -44,10 +46,20 @@ fun DownloadCard(
                         DownloadStatus.DOWNLOADING -> "下载中..."
                         DownloadStatus.UPDATING -> "更新中..."
                         DownloadStatus.COMPLETE -> "已完成"
-                    }
+                        DownloadStatus.ERROR -> "失败"
+                    },
+                    color = if (status == DownloadStatus.ERROR) Color.Red else Color.Unspecified
                 )
             }
-            if (status != DownloadStatus.COMPLETE) {
+            if (status == DownloadStatus.ERROR && errorMessage.isNotEmpty()) {
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                )
+            }
+            if (status != DownloadStatus.COMPLETE && status != DownloadStatus.ERROR) {
                 Row(
                     modifier = Modifier.padding(vertical = 6.dp)
                 ) {
@@ -72,5 +84,17 @@ fun DownloadCardPreview() {
 fun DownloadCardPreview1() {
     MyApplicationTheme {
         DownloadCard(threadId = 114514, status = DownloadStatus.DOWNLOADING)
+    }
+}
+
+@Preview
+@Composable
+fun DownloadCardPreviewError() {
+    MyApplicationTheme {
+        DownloadCard(
+            threadId = 114514,
+            status = DownloadStatus.ERROR,
+            errorMessage = "下载失败: 网络错误"
+        )
     }
 }

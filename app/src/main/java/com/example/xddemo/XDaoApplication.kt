@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.example.xddemo.data.AppContainer
 import com.example.xddemo.data.DefaultAppContainer
 import com.example.xddemo.data.repository.UserPreferencesRepository
+import com.example.xddemo.network.AddCookieInterceptor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -30,9 +31,12 @@ class XDaoApplication : Application() {
 
         userPreferencesRepository = UserPreferencesRepository(dataStore)
 
+        val cookieInterceptor = AddCookieInterceptor()
+        container = DefaultAppContainer(this, cookieInterceptor)
+
         applicationScope.launch {
             userPreferencesRepository.userHash.collect { cookie ->
-                container = DefaultAppContainer(this@XDaoApplication, cookie)
+                cookieInterceptor.cookie = cookie
                 Log.d("DataStoreDebug", "cookie:$cookie")
             }
         }

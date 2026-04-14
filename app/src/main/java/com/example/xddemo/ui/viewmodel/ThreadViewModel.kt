@@ -51,10 +51,17 @@ class ThreadViewModel(
 
     private val _searchResults = MutableStateFlow<List<ReplyEntity>>(emptyList())
     val searchResults: StateFlow<List<ReplyEntity>> = _searchResults
+    private val _searchError = MutableStateFlow<String?>(null)
+    val searchError: StateFlow<String?> = _searchError
 
     fun searchByKeywords(keywords: String) {
         viewModelScope.launch {
-            _searchResults.value = repository.searchByKeywords(keywords)
+            _searchError.value = null
+            try {
+                _searchResults.value = repository.searchByKeywords(keywords)
+            } catch (e: Exception) {
+                _searchError.value = "搜索失败: ${e.localizedMessage ?: "未知错误"}"
+            }
         }
     }
 
