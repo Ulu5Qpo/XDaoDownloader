@@ -15,7 +15,7 @@ class XDaoApplicationInstrumentedTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         val application = appContext.applicationContext as XDaoApplication
 
-        assertEquals("com.example.xddemo", appContext.packageName)
+        assertEquals("com.c137.chaDao", appContext.packageName)
         assertNotNull(application.userPreferencesRepository)
         assertNotNull(application.container)
         assertNotNull(application.container.cookieInterceptor)
