@@ -5,12 +5,15 @@ plugins {
     id("com.google.devtools.ksp") version "1.9.20-1.0.14"
 }
 
+val appNamespace = "com.example.xddemo"
+val appApplicationId = providers.gradleProperty("APP_APPLICATION_ID").orElse("com.c137.chaDao")
+
 android {
-    namespace = "com.example.xddemo"
+    namespace = appNamespace
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.xddemo"
+        applicationId = appApplicationId.get()
         minSdk = 24
         targetSdk = 34
         versionCode = 1
