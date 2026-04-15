@@ -1,10 +1,12 @@
 package com.example.xddemo.ui.viewmodel
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.xddemo.R
 import com.example.xddemo.data.model.ReplyEntity
 import com.example.xddemo.data.model.ThreadEntity
 import com.example.xddemo.data.model.ThreadWithReplies
@@ -19,7 +21,8 @@ import kotlinx.coroutines.launch
 
 class ThreadViewModel(
     private val repository: ThreadRepository,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val application: Application
 ) : ViewModel() {
 
     companion object {
@@ -60,7 +63,10 @@ class ThreadViewModel(
             try {
                 _searchResults.value = repository.searchByKeywords(keywords)
             } catch (e: Exception) {
-                _searchError.value = "搜索失败: ${e.localizedMessage ?: "未知错误"}"
+                _searchError.value = application.getString(
+                    R.string.error_search_failed,
+                    e.localizedMessage ?: application.getString(R.string.error_unknown)
+                )
             }
         }
     }

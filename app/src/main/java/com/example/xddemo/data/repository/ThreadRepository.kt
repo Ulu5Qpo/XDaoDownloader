@@ -45,7 +45,7 @@ class ThreadRepository(
             ApiResult.Success(Unit)
         } catch (e: Exception) {
             Log.e("ThreadRepository", "saveAllThreadPage failed for id=$id", e)
-            ApiResult.Error("下载失败: ${e.localizedMessage ?: "网络错误"}", e)
+            ApiResult.Error(e.localizedMessage.orEmpty(), e)
         }
     }
 
@@ -67,7 +67,7 @@ class ThreadRepository(
             ApiResult.Success(Unit)
         } catch (e: Exception) {
             Log.e("ThreadRepository", "updateThread failed for id=$id", e)
-            ApiResult.Error("更新失败: ${e.localizedMessage ?: "网络错误"}", e)
+            ApiResult.Error(e.localizedMessage.orEmpty(), e)
         }
     }
 

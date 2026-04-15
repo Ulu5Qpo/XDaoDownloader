@@ -20,8 +20,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.xddemo.R
 import com.example.xddemo.ui.AppViewModelProvider
 import com.example.xddemo.ui.components.DeleteButtonWithDialog
 import com.example.xddemo.ui.components.ReplyCard
@@ -47,7 +49,7 @@ fun SearchResultScreen(
     Scaffold(
         topBar = {
             SearchScreenAppBar(
-                title = "搜索结果",
+                title = stringResource(R.string.search_result_title),
                 onNavIconClick = navigateBack,
             )
         }

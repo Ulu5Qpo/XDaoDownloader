@@ -35,10 +35,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.example.xddemo.BuildConfig
 import com.example.xddemo.R
 import com.example.xddemo.data.mockThread
 import com.example.xddemo.data.model.ThreadEntity
@@ -92,7 +94,7 @@ fun ThreadCard(
                 ThreadHtmlView(threadEntity.content)
             }
             if (threadEntity.img != "") {
-                val imgUrl = "https://image.nmb.best/image/${threadEntity.img}${threadEntity.ext}"
+                val imgUrl = "${BuildConfig.IMAGE_BASE_URL}image/${threadEntity.img}${threadEntity.ext}"
                 Box(
                     modifier = Modifier
                         .heightIn(max = 200.dp) // 缩略图的最大高度
@@ -140,7 +142,7 @@ fun ThreadCard(
                         .padding(top = 16.dp)
                 ) {
                     Text(
-                        text = "更新",
+                        text = stringResource(R.string.thread_action_update),
                         fontSize = 20.sp,
                         color = Karacha400,
                         modifier = Modifier.fillMaxWidth()

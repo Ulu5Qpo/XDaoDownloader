@@ -42,12 +42,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.example.xddemo.R
 import com.example.xddemo.data.model.ReplyEntity
 import com.example.xddemo.data.model.toReplyEntity
 import com.example.xddemo.data.repository.ReplyPositionPreferences
@@ -212,7 +214,7 @@ fun ReplyWithHeadScreen(
                     val replyEntity = quoteStack.last() // 显示栈顶引用的Reply内容
                     if (replyEntity == null) {
                         Text(
-                            text = "数据库中无对应数据",
+                            text = stringResource(R.string.reply_missing_in_database),
                             modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp)
                         )
                     } else {

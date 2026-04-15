@@ -7,9 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.xddemo.R
 import com.example.xddemo.ui.AppViewModelProvider
 import com.example.xddemo.ui.components.PageSliderDialogButton
 import com.example.xddemo.ui.theme.MyApplicationTheme
@@ -28,7 +30,7 @@ fun TestScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "开发中",
+            text = stringResource(R.string.under_development),
             fontSize = 20.sp,
             modifier = Modifier.align(Alignment.Center),
             color = Color.Gray

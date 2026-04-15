@@ -11,7 +11,9 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.xddemo.R
 import com.example.xddemo.ui.theme.MyApplicationTheme
 
 @Composable
@@ -56,7 +58,7 @@ fun XDaoAppBar(
 fun AppBarPreview() {
     MyApplicationTheme {
         XDaoAppBar(
-            title = "主页",
+            title = stringResource(R.string.preview_home_title),
             canNavigateBack = false,
             onNavIconClick = {},
             onConfirmAction = {}
@@ -69,7 +71,7 @@ fun AppBarPreview() {
 fun AppBarPreview2() {
     MyApplicationTheme {
         XDaoAppBar(
-            title = "下载",
+            title = stringResource(R.string.preview_download_title),
             canNavigateBack = true,
             onNavIconClick = {},
             onConfirmAction = {}

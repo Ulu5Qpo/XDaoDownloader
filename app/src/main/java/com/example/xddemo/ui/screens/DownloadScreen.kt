@@ -25,8 +25,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.xddemo.R
 import com.example.xddemo.ui.AppViewModelProvider
 import com.example.xddemo.ui.components.DownloadButtonWithDialog
 import com.example.xddemo.ui.components.DownloadCard
@@ -45,7 +47,7 @@ fun DownloadScreen(
     Scaffold(
         topBar = {
             DownloadAppBar(
-                title = "下载列表",
+                title = stringResource(R.string.download_list_title),
                 onNavIconClick = navigateBack,
                 onDownloadConfirm = {
                     viewModel.startDownload(it)
@@ -60,7 +62,7 @@ fun DownloadScreen(
             if (downloadList.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Text(
-                        text = "请避免同时添加多个下载任务",
+                        text = stringResource(R.string.download_single_task_hint),
                         fontSize = 20.sp,
                         modifier = Modifier.align(Alignment.Center),
                         color = Color.Gray

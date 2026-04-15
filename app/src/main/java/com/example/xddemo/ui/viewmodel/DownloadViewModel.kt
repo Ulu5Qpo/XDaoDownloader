@@ -1,7 +1,9 @@
 package com.example.xddemo.ui.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.xddemo.R
 import com.example.xddemo.data.model.ApiResult
 import com.example.xddemo.data.repository.ThreadRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +25,12 @@ data class DownloadState(
 
 class DownloadViewModel(
     private val repository: ThreadRepository,
+    private val application: Application,
 ) : ViewModel() {
+
+    private fun errorDetail(message: String): String {
+        return message.ifBlank { application.getString(R.string.error_network) }
+    }
 
     private val _downloads = MutableStateFlow<List<DownloadState>>(emptyList())
     val downloadList: StateFlow<List<DownloadState>> = _downloads
@@ -46,7 +53,15 @@ class DownloadViewModel(
                 }
                 is ApiResult.Error -> {
                     _downloads.value = _downloads.value.map {
-                        if (it.threadId == id) it.copy(status = DownloadStatus.ERROR, errorMessage = result.message) else it
+                        if (it.threadId == id) {
+                            it.copy(
+                                status = DownloadStatus.ERROR,
+                                errorMessage = application.getString(
+                                    R.string.error_download_failed,
+                                    errorDetail(result.message)
+                                )
+                            )
+                        } else it
                     }
                 }
             }
@@ -66,7 +81,15 @@ class DownloadViewModel(
                 }
                 is ApiResult.Error -> {
                     _downloads.value = _downloads.value.map {
-                        if (it.threadId == id) it.copy(status = DownloadStatus.ERROR, errorMessage = result.message) else it
+                        if (it.threadId == id) {
+                            it.copy(
+                                status = DownloadStatus.ERROR,
+                                errorMessage = application.getString(
+                                    R.string.error_update_failed,
+                                    errorDetail(result.message)
+                                )
+                            )
+                        } else it
                     }
                 }
             }

@@ -23,9 +23,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.xddemo.R
 import com.example.xddemo.ui.theme.MyApplicationTheme
 
 @Composable
@@ -57,7 +59,7 @@ fun PageSliderDialogButton(
                         .fillMaxSize(),
                 ) {
                     Text(
-                        text = "跳页",
+                        text = stringResource(R.string.page_jump_title),
                         modifier = Modifier.padding(start = 18.dp, top = 12.dp),
                     )
                     Row(
@@ -95,7 +97,7 @@ fun PageSliderDialogButton(
                             },
                             modifier = Modifier.padding(end = 6.dp),
                         ) {
-                            Text("确定")
+                            Text(stringResource(R.string.action_confirm))
                         }
                     }
                 }

@@ -13,6 +13,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.example.xddemo.R
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.RGBLuminanceSource
@@ -48,19 +50,19 @@ fun QrCodeFromGallery(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Button(onClick = { galleryLauncher.launch("image/*") }) {
-            Text("Select QR Code from Gallery")
+            Text(stringResource(R.string.qr_gallery_button))
         }
 
         bitmap?.let {
             // 扫描二维码
             val result = scanQrCodeFromBitmap(it)
             result?.let { qrCode ->
-                Text("QR Code: $qrCode")
+                Text(stringResource(R.string.qr_gallery_result, qrCode))
                 scannedResult = qrCode
                 val cookie = JSONObject(qrCode).optString("cookie")
                 saveCookie("userhash=$cookie")
                 Log.d("QrCodeGallery", "cookie Result: $cookie")
-            } ?: Text("No QR Code found")
+            } ?: Text(stringResource(R.string.qr_gallery_not_found))
         }
     }
 }

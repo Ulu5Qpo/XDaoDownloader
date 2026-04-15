@@ -26,10 +26,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.xddemo.R
 import com.example.xddemo.ui.theme.MyApplicationTheme
 
 @Composable
@@ -41,7 +43,7 @@ fun DownloadButtonWithDialog(
 
     // IconButton 点击后显示 AlertDialog
     IconButton(onClick = { showDialog = true }) {
-        Icon(imageVector = Filled.Download, contentDescription = "Download")
+        Icon(imageVector = Filled.Download, contentDescription = stringResource(R.string.cd_download))
     }
 
     if (showDialog) {
@@ -57,7 +59,7 @@ fun DownloadButtonWithDialog(
                         .fillMaxSize(),
                 ) {
                     Text(
-                        text = "输入串号",
+                        text = stringResource(R.string.input_thread_id),
                         modifier = Modifier.padding(start = 18.dp, top = 12.dp),
                     )
                     Row {
@@ -86,7 +88,7 @@ fun DownloadButtonWithDialog(
                             },
                             modifier = Modifier.padding(top = 8.dp, end = 6.dp),
                         ) {
-                            Text("下载")
+                            Text(stringResource(R.string.drawer_download))
                         }
                     }
                 }

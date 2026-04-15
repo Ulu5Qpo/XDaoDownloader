@@ -26,8 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.xddemo.R
 
 @Composable
 fun SearchButtonWithDialog(
@@ -38,7 +40,7 @@ fun SearchButtonWithDialog(
 
     // IconButton 点击后显示 AlertDialog
     IconButton(onClick = { showDialog = true }) {
-        Icon(imageVector = Filled.Search, contentDescription = "Search")
+        Icon(imageVector = Filled.Search, contentDescription = stringResource(R.string.cd_search))
     }
 
     // AlertDialog 弹出
@@ -56,7 +58,7 @@ fun SearchButtonWithDialog(
                         .fillMaxSize(),
                 ) {
                     Text(
-                        text = "搜索关键词",
+                        text = stringResource(R.string.search_keywords),
                         modifier = Modifier.padding(start = 18.dp, top = 12.dp),
                     )
                     Row {
@@ -84,7 +86,7 @@ fun SearchButtonWithDialog(
                             },
                             modifier = Modifier.padding(top = 8.dp, end = 6.dp),
                         ) {
-                            Text("搜索")
+                            Text(stringResource(R.string.action_search))
                         }
                     }
                 }

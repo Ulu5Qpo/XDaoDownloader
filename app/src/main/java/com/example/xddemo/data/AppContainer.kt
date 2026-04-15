@@ -1,6 +1,7 @@
 package com.example.xddemo.data
 
 import android.content.Context
+import com.example.xddemo.BuildConfig
 import com.example.xddemo.data.repository.ThreadRepository
 import com.example.xddemo.network.AddCookieInterceptor
 import com.example.xddemo.network.XDaoApiService
@@ -20,7 +21,7 @@ class DefaultAppContainer(
 
     override val cookieInterceptor: AddCookieInterceptor = cookieInterceptor
 
-    private val baseUrl = "https://api.nmb.best/"
+    private val baseUrl = BuildConfig.API_BASE_URL
 
     private val client = OkHttpClient.Builder()
         .addInterceptor(cookieInterceptor)

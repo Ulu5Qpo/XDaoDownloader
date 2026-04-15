@@ -12,9 +12,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.xddemo.R
 import com.example.xddemo.ui.theme.MyApplicationTheme
 import com.example.xddemo.ui.viewmodel.DownloadStatus
 
@@ -43,10 +45,10 @@ fun DownloadCard(
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = when (status) {
-                        DownloadStatus.DOWNLOADING -> "下载中..."
-                        DownloadStatus.UPDATING -> "更新中..."
-                        DownloadStatus.COMPLETE -> "已完成"
-                        DownloadStatus.ERROR -> "失败"
+                        DownloadStatus.DOWNLOADING -> stringResource(R.string.download_status_downloading)
+                        DownloadStatus.UPDATING -> stringResource(R.string.download_status_updating)
+                        DownloadStatus.COMPLETE -> stringResource(R.string.download_status_complete)
+                        DownloadStatus.ERROR -> stringResource(R.string.download_status_failed)
                     },
                     color = if (status == DownloadStatus.ERROR) Color.Red else Color.Unspecified
                 )
@@ -94,7 +96,10 @@ fun DownloadCardPreviewError() {
         DownloadCard(
             threadId = 114514,
             status = DownloadStatus.ERROR,
-            errorMessage = "下载失败: 网络错误"
+            errorMessage = stringResource(
+                R.string.error_download_failed,
+                stringResource(R.string.error_network)
+            )
         )
     }
 }

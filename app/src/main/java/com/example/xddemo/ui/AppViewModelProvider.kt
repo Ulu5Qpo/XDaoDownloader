@@ -14,13 +14,15 @@ object AppViewModelProvider {
         initializer {
             ThreadViewModel(
                 repository = xDaoApplication().container.threadRepository,
-                userPreferencesRepository = xDaoApplication().userPreferencesRepository
+                userPreferencesRepository = xDaoApplication().userPreferencesRepository,
+                application = xDaoApplication()
             )
         }
 
         initializer {
             DownloadViewModel(
                 repository = xDaoApplication().container.threadRepository,
+                application = xDaoApplication(),
             )
         }
     }

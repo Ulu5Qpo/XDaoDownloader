@@ -11,6 +11,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.example.xddemo.R
 import com.google.zxing.integration.android.IntentIntegrator
 import org.json.JSONObject
 
@@ -45,11 +47,11 @@ fun QrCodeScanner(
             integrator.setBeepEnabled(true)
             launcher.launch(integrator.createScanIntent())
         }) {
-            Text("Scan QR Code")
+            Text(stringResource(R.string.qr_scan_button))
         }
 
         scannedResult?.let {
-            Text("Scanned Result: $it")
+            Text(stringResource(R.string.qr_scan_result, it))
         }
     }
 }

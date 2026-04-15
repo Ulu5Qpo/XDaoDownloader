@@ -13,6 +13,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import com.example.xddemo.R
 
 @Composable
 fun DeleteButtonWithDialog(
@@ -23,27 +25,27 @@ fun DeleteButtonWithDialog(
 
     // IconButton 点击后显示 AlertDialog
     IconButton(onClick = { showDialog = true }) {
-        Icon(imageVector = Filled.DeleteForever, contentDescription = "Delete")
+        Icon(imageVector = Filled.DeleteForever, contentDescription = stringResource(R.string.cd_delete))
     }
 
     // AlertDialog 弹出
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },  // 点击空白处关闭 Dialog
-            title = { Text("删除") },
-            text = { Text("确认要删除该串吗") },
+            title = { Text(stringResource(R.string.delete_title)) },
+            text = { Text(stringResource(R.string.delete_thread_confirm)) },
             confirmButton = {
                 TextButton(onClick = {
                     onConfirmAction()  // 执行传入的函数
                     showDialog = false // 关闭 Dialog
                     navigateUp()
                 }) {
-                    Text("确认删除")
+                    Text(stringResource(R.string.action_delete_confirm))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDialog = false }) {
-                    Text("取消")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )

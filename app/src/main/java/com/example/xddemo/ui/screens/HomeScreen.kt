@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -78,7 +79,7 @@ fun HomeScreen(
         scaffoldState = scaffoldState,
         topBar = {
             HomeScreenAppBar(
-                title = "X岛离线版",
+                title = stringResource(R.string.home_title),
                 onSearchConfirm = navigateToSearchResult,
                 onNavIconClick = {
                     scope.launch {
@@ -152,7 +153,7 @@ fun AppDrawerContent(
                 Icon(Filled.RssFeed, null)
             },
             text = {
-                Text("订阅")
+                Text(stringResource(R.string.drawer_subscriptions))
             },
             modifier = Modifier
                 .clickable { onScreenChange("test") }
@@ -162,7 +163,7 @@ fun AppDrawerContent(
                 Icon(Filled.Download, null)
             },
             text = {
-                Text("下载")
+                Text(stringResource(R.string.drawer_download))
             },
             modifier = Modifier
                 .clickable { onScreenChange("download") }
@@ -172,7 +173,7 @@ fun AppDrawerContent(
                 Icon(Filled.Settings, null)
             },
             text = {
-                Text("设置")
+                Text(stringResource(R.string.drawer_settings))
             },
             modifier = Modifier
                 .clickable { onScreenChange("setting") }
