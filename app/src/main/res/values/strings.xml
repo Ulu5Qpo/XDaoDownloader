@@ -38,4 +38,5 @@
     <string name="error_search_failed">搜索失败: %1$s</string>
     <string name="error_network">网络错误</string>
     <string name="error_unknown">未知错误</string>
+    <string name="reply_text_copied">已复制回复内容</string>
 </resources>

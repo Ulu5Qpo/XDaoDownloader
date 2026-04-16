@@ -1,62 +1,134 @@
 package com.example.xddemo.ui.components
 
-import android.widget.TextView
-import androidx.compose.runtime.Composable
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.graphics.Color
-import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.text.TextPaint
-import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.text.style.StyleSpan
+import android.view.HapticFeedbackConstants
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
+import android.widget.TextView
+import android.widget.Toast
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
+import com.example.xddemo.R
 
 @Composable
 fun HtmlTextView(
     htmlText: String,
     onQuoteClick: (String) -> Unit
 ) {
-    // 状态管理，控制哪些遮挡条块已被点击
-    val hiddenContentState = remember { mutableStateOf(setOf<Int>()) }
+    val hiddenContentState = remember(htmlText) { mutableStateOf(emptySet<Int>()) }
+    val textColor = MaterialTheme.colors.onSurface.toArgb()
+    val quoteColor = android.graphics.Color.rgb(120, 153, 34)
+    val hiddenColor = MaterialTheme.colors.onSurface.toArgb()
 
     AndroidView(
         factory = { context ->
             TextView(context).apply {
-                text = parseHtmlWithCustomSpans(htmlText, hiddenContentState, onQuoteClick)
                 setTextSize(16f)
-                setTextColor(Color.parseColor("#212121"))
                 letterSpacing = 0.05f
                 setLineSpacing(8f, 1f)
-                movementMethod = LinkMovementMethod.getInstance() // 确保点击事件生效
+                highlightColor = Color.TRANSPARENT
+                setTextColor(textColor)
+                setText(
+                    parseHtmlWithCustomSpans(
+                        htmlText = htmlText,
+                        hiddenContentState = hiddenContentState,
+                        onQuoteClick = onQuoteClick,
+                        quoteColor = quoteColor,
+                        hiddenForegroundColor = hiddenColor,
+                        hiddenBackgroundColor = hiddenColor
+                    ),
+                    TextView.BufferType.SPANNABLE
+                )
+                val longPressCopy = {
+                    copyTextToClipboard(context, text)
+                    true
+                }
+                setOnLongClickListener {
+                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    longPressCopy()
+                }
+                setOnTouchListener(HtmlTextTouchListener(onLongPress = {
+                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    longPressCopy()
+                }))
             }
         },
         update = { textView ->
-            textView.text = parseHtmlWithCustomSpans(htmlText, hiddenContentState, onQuoteClick)
+            textView.setTextColor(textColor)
+            textView.setText(
+                parseHtmlWithCustomSpans(
+                    htmlText = htmlText,
+                    hiddenContentState = hiddenContentState,
+                    onQuoteClick = onQuoteClick,
+                    quoteColor = quoteColor,
+                    hiddenForegroundColor = hiddenColor,
+                    hiddenBackgroundColor = hiddenColor
+                ),
+                TextView.BufferType.SPANNABLE
+            )
         },
     )
 }
 
-// 解析 HTML 并应用自定义可点击的 span
 fun parseHtmlWithCustomSpans(
     htmlText: String,
     hiddenContentState: MutableState<Set<Int>>,
-    onQuoteClick: (String) -> Unit
+    onQuoteClick: (String) -> Unit,
+    quoteColor: Int,
+    hiddenForegroundColor: Int,
+    hiddenBackgroundColor: Int
 ): Spannable {
-    // 初步解析 HTML
     val spannableBuilder = SpannableStringBuilder(
         HtmlCompat.fromHtml(htmlText, HtmlCompat.FROM_HTML_MODE_LEGACY)
     )
 
-    // 正则匹配 ">>No.数字" 的引用
+    val hiddenPattern = Regex("\\[h](.*?)\\[/h]")
+    val hiddenMatches = hiddenPattern.findAll(spannableBuilder.toString()).toList().asReversed()
+
+    hiddenMatches.forEach { matchResult ->
+        val start = matchResult.range.first
+        val end = matchResult.range.last + 1
+        val content = matchResult.groupValues[1]
+        val hashCode = matchResult.range.hashCode()
+        val isContentVisible = hiddenContentState.value.contains(hashCode)
+
+        spannableBuilder.replace(start, end, content)
+        if (!isContentVisible) {
+            val contentStart = start
+            val contentEnd = contentStart + content.length
+
+            spannableBuilder.setSpan(object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    hiddenContentState.value = hiddenContentState.value + hashCode
+                }
+
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.color = hiddenForegroundColor
+                    ds.bgColor = hiddenBackgroundColor
+                    ds.isUnderlineText = false
+                }
+            }, contentStart, contentEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+    }
+
     val quotePattern = Regex(">>No\\.(\\d+)")
-    val quoteMatches = quotePattern.findAll(spannableBuilder)
+    val quoteMatches = quotePattern.findAll(spannableBuilder.toString()).toList()
 
     quoteMatches.forEach { matchResult ->
         val start = matchResult.range.first
@@ -70,46 +142,117 @@ fun parseHtmlWithCustomSpans(
 
             override fun updateDrawState(ds: TextPaint) {
                 super.updateDrawState(ds)
-                ds.color = Color.rgb(120,153,34)
-
+                ds.color = quoteColor
             }
         }, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
-    // 正则匹配 "[h] 内容 [/h]" 模式
-    val hiddenPattern = Regex("\\[h](.*?)\\[/h]")
-    val hiddenMatches = hiddenPattern.findAll(spannableBuilder)
+    return spannableBuilder
+}
 
-    hiddenMatches.forEach { matchResult ->
-        val start = matchResult.range.first
-        val end = matchResult.range.last + 1
-        val content = matchResult.groupValues[1] // 提取遮挡内容
-        val hashCode = matchResult.range.hashCode() // 用匹配的范围创建唯一标识
-        val isContentVisible = hiddenContentState.value.contains(hashCode)
-
-        spannableBuilder.replace(start, end, content)
-        if (isContentVisible) {
-            // 显示实际内容
-            //spannableBuilder.replace(start, end, content)
-        } else {
-            //spannableBuilder.replace(start, end, content)
-            val contentStart = start
-            val contentEnd = contentStart + content.length
-
-            spannableBuilder.setSpan(object : ClickableSpan() {
-                override fun onClick(widget: View) {
-                    hiddenContentState.value = hiddenContentState.value + hashCode
-                }
-
-                override fun updateDrawState(ds: TextPaint) {
-                    super.updateDrawState(ds)
-                    ds.color = Color.BLACK // 黑色遮挡效果
-                    ds.bgColor = Color.BLACK // 深色背景
-                    ds.isUnderlineText = false
-                }
-            }, contentStart, contentEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+private class HtmlTextTouchListener(
+    private val onLongPress: () -> Unit
+) : View.OnTouchListener {
+    private var pressedSpan: ClickableSpan? = null
+    private var longPressTriggered = false
+    private var downX = 0f
+    private var downY = 0f
+    private var activeTextView: TextView? = null
+    private val longPressRunnable = Runnable {
+        if (pressedSpan != null) {
+            longPressTriggered = true
+            onLongPress()
         }
     }
 
-    return spannableBuilder
+    override fun onTouch(view: View, event: MotionEvent): Boolean {
+        val textView = view as? TextView ?: return false
+        return when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> handleActionDown(textView, event)
+            MotionEvent.ACTION_MOVE -> handleActionMove(textView, event)
+            MotionEvent.ACTION_UP -> handleActionUp(textView, event)
+            MotionEvent.ACTION_CANCEL -> {
+                clearPressedState(textView)
+                false
+            }
+
+            else -> false
+        }
+    }
+
+    private fun handleActionDown(textView: TextView, event: MotionEvent): Boolean {
+        val span = findClickableSpan(textView, event) ?: return false
+        pressedSpan = span
+        activeTextView = textView
+        longPressTriggered = false
+        downX = event.x
+        downY = event.y
+        textView.postDelayed(
+            longPressRunnable,
+            ViewConfiguration.getLongPressTimeout().toLong()
+        )
+        return true
+    }
+
+    private fun handleActionMove(textView: TextView, event: MotionEvent): Boolean {
+        val currentSpan = pressedSpan ?: return false
+        val touchSlop = ViewConfiguration.get(textView.context).scaledTouchSlop
+        val movedTooFar =
+            kotlin.math.abs(event.x - downX) > touchSlop || kotlin.math.abs(event.y - downY) > touchSlop
+
+        if (movedTooFar || findClickableSpan(textView, event) != currentSpan) {
+            clearPressedState(textView)
+            return false
+        }
+        return true
+    }
+
+    private fun handleActionUp(textView: TextView, event: MotionEvent): Boolean {
+        val span = pressedSpan ?: return false
+        val handledByLongPress = longPressTriggered
+        val shouldTriggerClick = !handledByLongPress && findClickableSpan(textView, event) == span
+
+        clearPressedState(textView)
+
+        if (shouldTriggerClick) {
+            span.onClick(textView)
+        }
+        return true
+    }
+
+    private fun clearPressedState(textView: TextView) {
+        textView.removeCallbacks(longPressRunnable)
+        activeTextView?.removeCallbacks(longPressRunnable)
+        activeTextView = null
+        pressedSpan = null
+        longPressTriggered = false
+    }
+}
+
+private fun findClickableSpan(textView: TextView, event: MotionEvent): ClickableSpan? {
+    val text = textView.text as? Spanned ?: return null
+    val layout = textView.layout ?: return null
+    val x = event.x.toInt() - textView.totalPaddingLeft + textView.scrollX
+    val y = event.y.toInt() - textView.totalPaddingTop + textView.scrollY
+
+    if (x < 0 || y < 0 || x > layout.width || y > layout.height) {
+        return null
+    }
+
+    val line = layout.getLineForVertical(y)
+    val offset = layout.getOffsetForHorizontal(line, x.toFloat())
+    return text.getSpans(offset, offset, ClickableSpan::class.java)
+        .firstOrNull { span ->
+            val spanStart = text.getSpanStart(span)
+            val spanEnd = text.getSpanEnd(span)
+            offset in spanStart until spanEnd
+        }
+}
+
+private fun copyTextToClipboard(context: Context, text: CharSequence): Boolean {
+    val clipboardManager =
+        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    clipboardManager.setPrimaryClip(ClipData.newPlainText("reply_content", text))
+    Toast.makeText(context, context.getString(R.string.reply_text_copied), Toast.LENGTH_SHORT).show()
+    return true
 }
