@@ -4,6 +4,10 @@
     <string name="drawer_subscriptions">订阅</string>
     <string name="drawer_download">下载</string>
     <string name="drawer_settings">设置</string>
+    <string name="settings_title">设置</string>
+    <string name="settings_import_cookie">导入饼干</string>
+    <string name="settings_scan_qr_code">扫描二维码</string>
+    <string name="settings_pick_qr_from_gallery">从相册识别二维码</string>
     <string name="download_list_title">下载列表</string>
     <string name="download_single_task_hint">请避免同时添加多个下载任务</string>
     <string name="search_result_title">搜索结果</string>
@@ -26,11 +30,9 @@
     <string name="cd_search">搜索</string>
     <string name="cd_delete">删除</string>
     <string name="cd_download">下载</string>
-    <string name="qr_scan_button">扫码登录</string>
-    <string name="qr_scan_result">扫码结果：%1$s</string>
-    <string name="qr_gallery_button">从相册识别二维码</string>
-    <string name="qr_gallery_result">二维码内容：%1$s</string>
-    <string name="qr_gallery_not_found">未识别到二维码</string>
+    <string name="import_cookie_success">饼干导入成功</string>
+    <string name="import_cookie_invalid">二维码中未找到可导入的饼干</string>
+    <string name="import_cookie_not_found">未识别到二维码</string>
     <string name="preview_home_title">主页</string>
     <string name="preview_download_title">下载</string>
     <string name="error_download_failed">下载失败: %1$s</string>

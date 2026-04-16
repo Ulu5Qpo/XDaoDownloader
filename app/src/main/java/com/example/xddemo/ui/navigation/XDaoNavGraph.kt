@@ -151,7 +151,9 @@ fun XDaoNavGraph(
         }
 
         composable(route = "setting") {
-            SettingScreen()
+            SettingScreen(
+                navigateBack = { navController.navigateUp() }
+            )
         }
         composable(route = "test") {
             TestScreen()
