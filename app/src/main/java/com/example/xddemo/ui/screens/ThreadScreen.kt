@@ -2,10 +2,9 @@ package com.example.xddemo.ui.screens
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.xddemo.data.mockThread
 import com.example.xddemo.data.mockThreads
@@ -21,7 +20,7 @@ fun ThreadScreen(
     onUpdateClick: (Int) -> Unit = {}
 ) {
     Surface(
-        color = Color(0xFFFAFAFA)
+        color = MaterialTheme.colors.background
     ) {
         LazyColumn {
             items(threads) { threadEntity ->

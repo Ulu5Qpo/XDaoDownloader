@@ -15,10 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalElevationOverlay
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Message
 import androidx.compose.material.icons.outlined.Bookmarks
@@ -58,75 +61,78 @@ fun ThreadCard(
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
-    Surface(
-        elevation = 3.dp,
-        modifier = modifier
-            .padding(bottom = 16.dp)
-            .combinedClickable(
-                onClick = { onThreadClick(threadEntity.id) },
-                onLongClick = { showDialog = true }
-            )
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
+    CompositionLocalProvider(LocalElevationOverlay provides null) {
+        Surface(
+            color = MaterialTheme.colors.surface,
+            elevation = 3.dp,
+            modifier = modifier
+                .padding(bottom = 16.dp)
+                .combinedClickable(
+                    onClick = { onThreadClick(threadEntity.id) },
+                    onLongClick = { showDialog = true }
+                )
         ) {
-            Row(
-                modifier = Modifier.padding(top = 4.dp)
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = threadEntity.userHash,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(start = 10.dp)
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = threadEntity.now,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
-                    .heightIn(max = 400.dp)
-            ) {
-                ThreadHtmlView(threadEntity.content)
-            }
-            if (threadEntity.img != "") {
-                val imgUrl = "${BuildConfig.IMAGE_BASE_URL}image/${threadEntity.img}${threadEntity.ext}"
-                Box(
-                    modifier = Modifier
-                        .heightIn(max = 200.dp) // 缩略图的最大高度
-                        .padding(horizontal = 12.dp)
-                        .clickable { onImageClick(imgUrl) }
+                Row(
+                    modifier = Modifier.padding(top = 4.dp)
                 ) {
-                    AsyncImage(
-                        model = imgUrl, // 根据实际情况拼接图片的 URL
-                        contentDescription = null,
-                        placeholder = painterResource(R.drawable.ic_connection_error),
-                        contentScale = ContentScale.Fit, // 保持长宽比
+                    Text(
+                        text = threadEntity.userHash,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(start = 10.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = threadEntity.now,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(end = 8.dp)
                     )
                 }
-            }
-            Row(
-                modifier = Modifier.padding(bottom = 4.dp)
-            ) {
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Outlined.Bookmarks,
-                    contentDescription = null,
-                    tint = Color.Gray,
+                Row(
                     modifier = Modifier
-                        .padding(end = 2.dp)
-                        .size(18.dp)
-                        .align(Alignment.CenterVertically)
-                )
-                Text(
-                    text = threadEntity.replyCount.toString(),
-                    color = Color.Gray,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .heightIn(max = 400.dp)
+                ) {
+                    ThreadHtmlView(threadEntity.content)
+                }
+                if (threadEntity.img != "") {
+                    val imgUrl = "${BuildConfig.IMAGE_BASE_URL}image/${threadEntity.img}${threadEntity.ext}"
+                    Box(
+                        modifier = Modifier
+                            .heightIn(max = 200.dp) // 缩略图的最大高度
+                            .padding(horizontal = 12.dp)
+                            .clickable { onImageClick(imgUrl) }
+                    ) {
+                        AsyncImage(
+                            model = imgUrl, // 根据实际情况拼接图片的 URL
+                            contentDescription = null,
+                            placeholder = painterResource(R.drawable.ic_connection_error),
+                            contentScale = ContentScale.Fit, // 保持长宽比
+                        )
+                    }
+                }
+                Row(
+                    modifier = Modifier.padding(bottom = 4.dp)
+                ) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Icon(
+                        imageVector = Icons.Outlined.Bookmarks,
+                        contentDescription = null,
+                        tint = Color.Gray,
+                        modifier = Modifier
+                            .padding(end = 2.dp)
+                            .size(18.dp)
+                            .align(Alignment.CenterVertically)
+                    )
+                    Text(
+                        text = threadEntity.replyCount.toString(),
+                        color = Color.Gray,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                }
             }
         }
     }
