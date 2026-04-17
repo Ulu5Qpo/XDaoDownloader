@@ -19,3 +19,29 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep generic signatures and annotations used by Retrofit and Gson.
+-keepattributes Signature,RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault
+
+# Retrofit service interfaces are created reflectively.
+-keep interface com.example.xddemo.network.** { *; }
+
+# Keep response models used by Gson deserialization.
+-keep class com.example.xddemo.data.model.** { *; }
+
+# Keep Room database, DAO interfaces, and entity models.
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Dao class *
+-keep @androidx.room.Entity class *
+-keep class androidx.room.RoomDatabase_Impl
+-dontwarn androidx.room.paging.**
+
+# Keep Kotlin metadata used by reflection-based libraries.
+-keep class kotlin.Metadata { *; }
+
+# Silence optional annotations referenced by OkHttp/Retrofit.
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+-dontwarn javax.annotation.**
+-dontwarn kotlin.Unit
+-dontwarn kotlin.KotlinNothingValueException
+-dontwarn kotlinx.coroutines.**

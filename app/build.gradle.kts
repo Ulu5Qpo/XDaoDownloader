@@ -16,8 +16,8 @@ android {
         applicationId = appApplicationId.get()
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         buildConfigField("String", "API_BASE_URL", "\"https://api.nmb.best/\"")
         buildConfigField("String", "IMAGE_BASE_URL", "\"https://image.nmb.best/\"")
@@ -27,7 +27,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

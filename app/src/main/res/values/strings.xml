@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">XD Demo</string>
-    <string name="home_title">X岛离线版</string>
+    <string name="app_name">ChaDao</string>
+    <string name="home_title">茶岛-X岛离线版</string>
     <string name="drawer_subscriptions">订阅</string>
     <string name="drawer_download">下载</string>
     <string name="drawer_settings">设置</string>
