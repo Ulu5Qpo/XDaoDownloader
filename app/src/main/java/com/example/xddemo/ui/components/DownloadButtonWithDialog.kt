@@ -1,5 +1,6 @@
 package com.example.xddemo.ui.components
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,8 +38,9 @@ import com.example.xddemo.ui.theme.MyApplicationTheme
 
 @Composable
 fun DownloadButtonWithDialog(
-    onConfirmation: (Int) -> Unit = {},
+    onConfirmation: (String) -> String? = { null },
 ) {
+    val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }  // 控制Dialog的显示状态
     var threadId by remember { mutableStateOf("") }
 
@@ -83,8 +86,13 @@ fun DownloadButtonWithDialog(
                         Spacer(modifier = Modifier.weight(1f))
                         TextButton(
                             onClick = {
-                                showDialog = false
-                                onConfirmation(threadId.toInt())
+                                val errorMessage = onConfirmation(threadId)
+                                if (errorMessage == null) {
+                                    showDialog = false
+                                    threadId = ""
+                                } else {
+                                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                                }
                             },
                             modifier = Modifier.padding(top = 8.dp, end = 6.dp),
                         ) {

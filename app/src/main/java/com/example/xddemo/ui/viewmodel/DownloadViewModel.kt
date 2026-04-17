@@ -35,6 +35,14 @@ class DownloadViewModel(
     private val _downloads = MutableStateFlow<List<DownloadState>>(emptyList())
     val downloadList: StateFlow<List<DownloadState>> = _downloads
 
+    fun startDownload(idInput: String): String? {
+        val id = idInput.trim().toIntOrNull()
+            ?: return application.getString(R.string.error_invalid_thread_id)
+
+        startDownload(id)
+        return null
+    }
+
     fun startDownload(id: Int) {
         viewModelScope.launch {
             if (repository.getSingleReply(id) != null) {

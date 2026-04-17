@@ -58,6 +58,7 @@ import com.example.xddemo.ui.components.DeleteButtonWithDialog
 import com.example.xddemo.ui.components.PageSliderDialogButton
 import com.example.xddemo.ui.components.ReplyCard
 import com.example.xddemo.ui.theme.MyApplicationTheme
+import com.example.xddemo.ui.viewmodel.SingleReplyLookupResult
 import com.example.xddemo.ui.viewmodel.ThreadViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -87,6 +88,16 @@ fun ReplyWithHeadScreen(
 
     val isOnlyPoster = remember { mutableStateOf(false) }
     val quoteStack = remember { mutableStateListOf<ReplyEntity?>() } // 栈来存储对话框内容
+    val loadQuotedReply: (String) -> Unit = { quoteId ->
+        scope.launch {
+            when (val result = viewModel.getSingleReply(quoteId)) {
+                is SingleReplyLookupResult.Success -> quoteStack.add(result.reply)
+                is SingleReplyLookupResult.Error -> {
+                    Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
     LaunchedEffect(threadId) {
         viewModel.getThreadWithReplies(threadId)
@@ -97,7 +108,7 @@ fun ReplyWithHeadScreen(
     } ?: emptyList()
 
     LaunchedEffect(filteredReplies) {
-        totalPage = ceil(filteredReplies.size / 19.0).toInt()
+        totalPage = ceil(filteredReplies.size / 19.0).toInt().coerceAtLeast(1)
         Log.d("selectPageDetail", "totalPage: $totalPage")
     }
 
@@ -156,9 +167,11 @@ fun ReplyWithHeadScreen(
                 onNavIconClick = navigateBack,
                 curPage = curPage,
                 totalPage = totalPage,
-                onPageSelect = {
-                    scope.launch { listState.scrollToItem((curPage - 1) * 19 + 1) }
-                    curPage = it
+                onPageSelect = { selectedPage ->
+                    val safePage = selectedPage.coerceIn(1, totalPage)
+                    val targetIndex = if (filteredReplies.isEmpty()) 0 else (safePage - 1) * 19 + 1
+                    scope.launch { listState.scrollToItem(targetIndex) }
+                    curPage = safePage
                 },
                 onOnlyPosterClick = {
                     isOnlyPoster.value = !isOnlyPoster.value
@@ -173,12 +186,7 @@ fun ReplyWithHeadScreen(
                         poster = threadWithReplies.thread.userHash,
                         replyEntity = threadWithReplies.thread.toReplyEntity(),
                         onImageClick = navigateToImageView,
-                        onQuoteClick = { quoteId ->
-                            scope.launch {
-                                val quoteReply = viewModel.getSingleReply(quoteId.toInt())
-                                quoteStack.add(quoteReply) // 将引用的Reply加入栈
-                            }
-                        }
+                        onQuoteClick = loadQuotedReply
                     )
                     Divider()
                 }
@@ -187,12 +195,7 @@ fun ReplyWithHeadScreen(
                         poster = threadWithReplies.thread.userHash,
                         replyEntity = reply,
                         onImageClick = navigateToImageView,
-                        onQuoteClick = { quoteId ->
-                            scope.launch {
-                                val quoteReply = viewModel.getSingleReply(quoteId.toInt())
-                                quoteStack.add(quoteReply) // 将引用的Reply加入栈
-                            }
-                        }
+                        onQuoteClick = loadQuotedReply
                     )
                     Divider()
                 }
@@ -224,12 +227,7 @@ fun ReplyWithHeadScreen(
                                 poster = currentThread.thread.userHash,
                                 replyEntity = replyEntity,
                                 onImageClick = navigateToImageView,
-                                onQuoteClick = { quoteId ->
-                                    scope.launch {
-                                        val nestedQuoteReply = viewModel.getSingleReply(quoteId.toInt())
-                                        quoteStack.add(nestedQuoteReply)  // 将新的引用加入栈
-                                    }
-                                }
+                                onQuoteClick = loadQuotedReply
                             )
                         }
                     }

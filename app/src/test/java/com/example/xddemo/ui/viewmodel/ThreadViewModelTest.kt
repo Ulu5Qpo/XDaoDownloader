@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Rule
 import org.junit.Test
 
@@ -108,5 +109,23 @@ class ThreadViewModelTest {
         advanceUntilIdle()
 
         coVerify(exactly = 1) { userPreferencesRepository.saveUserHash("cookie") }
+    }
+
+    @Test
+    fun getSingleReply_returnsLocalizedError_whenReplyIdIsInvalid() = runTest(mainDispatcherRule.testDispatcher) {
+        every { repository.getAllThreads() } returns flowOf(emptyList())
+        every { application.getString(R.string.error_invalid_reply_id) } returns "引用回复编号无效或超出范围"
+
+        val viewModel = ThreadViewModel(repository, userPreferencesRepository, application)
+
+        when (val result = viewModel.getSingleReply("999999999999")) {
+            is SingleReplyLookupResult.Error -> {
+                assertEquals("引用回复编号无效或超出范围", result.message)
+            }
+
+            is SingleReplyLookupResult.Success -> fail("Expected invalid reply id to return an error")
+        }
+
+        coVerify(exactly = 0) { repository.getSingleReply(any()) }
     }
 }

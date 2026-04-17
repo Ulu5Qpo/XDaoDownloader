@@ -52,6 +52,15 @@ class ThreadViewModel(
         return repository.getSingleReply(replyId)
     }
 
+    suspend fun getSingleReply(replyId: String): SingleReplyLookupResult {
+        val parsedReplyId = replyId.trim().toIntOrNull()
+            ?: return SingleReplyLookupResult.Error(
+                application.getString(R.string.error_invalid_reply_id)
+            )
+
+        return SingleReplyLookupResult.Success(repository.getSingleReply(parsedReplyId))
+    }
+
     private val _searchResults = MutableStateFlow<List<ReplyEntity>>(emptyList())
     val searchResults: StateFlow<List<ReplyEntity>> = _searchResults
     private val _searchError = MutableStateFlow<String?>(null)
@@ -86,3 +95,8 @@ class ThreadViewModel(
 }
 
 data class AllThreadState(val itemList: List<ThreadEntity> = listOf())
+
+sealed interface SingleReplyLookupResult {
+    data class Success(val reply: ReplyEntity?) : SingleReplyLookupResult
+    data class Error(val message: String) : SingleReplyLookupResult
+}

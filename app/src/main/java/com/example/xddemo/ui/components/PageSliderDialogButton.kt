@@ -38,9 +38,11 @@ fun PageSliderDialogButton(
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var selectPage by remember { mutableIntStateOf(initialPage) }
+    val safeTotalPage = totalPage.coerceAtLeast(1)
+    val safeSelectedPage = selectPage.coerceIn(1, safeTotalPage)
 
     IconButton(onClick = {
-        selectPage = initialPage
+        selectPage = initialPage.coerceIn(1, safeTotalPage)
         showDialog = true
     }) {
         Icon(imageVector = Filled.UTurnRight, null)
@@ -67,9 +69,11 @@ fun PageSliderDialogButton(
                     ) {
                         Spacer(modifier = Modifier.weight(1f))
                         Slider(
-                            value = selectPage.toFloat(),
-                            onValueChange = { selectPage = it.toInt() },
-                            valueRange = 1f..totalPage.toFloat(),
+                            value = safeSelectedPage.toFloat(),
+                            onValueChange = {
+                                selectPage = it.toInt().coerceIn(1, safeTotalPage)
+                            },
+                            valueRange = 1f..safeTotalPage.toFloat(),
                         )
                         Spacer(modifier = Modifier.weight(1f))
                     }
@@ -80,7 +84,7 @@ fun PageSliderDialogButton(
                     ) {
                         Spacer(modifier = Modifier.weight(1f))
                         Text(
-                            text = "$selectPage/$totalPage",
+                            text = "$safeSelectedPage/$safeTotalPage",
                         )
                         Spacer(modifier = Modifier.weight(1f))
                     }
@@ -93,7 +97,7 @@ fun PageSliderDialogButton(
                         TextButton(
                             onClick = {
                                 showDialog = false
-                                onPageSelected(selectPage)
+                                onPageSelected(safeSelectedPage)
                             },
                             modifier = Modifier.padding(end = 6.dp),
                         ) {

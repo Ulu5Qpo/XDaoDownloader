@@ -85,4 +85,16 @@ class DownloadViewModelTest {
 
         assertEquals(listOf(DownloadState(5, DownloadStatus.COMPLETE)), viewModel.downloadList.value)
     }
+
+    @Test
+    fun startDownload_returnsLocalizedError_whenInputIsInvalid() {
+        every { application.getString(R.string.error_invalid_thread_id) } returns "串号无效或超出范围"
+
+        val viewModel = DownloadViewModel(repository, application)
+        val result = viewModel.startDownload("999999999999")
+
+        assertEquals("串号无效或超出范围", result)
+        assertEquals(emptyList<DownloadState>(), viewModel.downloadList.value)
+        coVerify(exactly = 0) { repository.getSingleReply(any()) }
+    }
 }

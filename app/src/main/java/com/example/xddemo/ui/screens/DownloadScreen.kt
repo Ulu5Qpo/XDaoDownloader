@@ -87,7 +87,7 @@ fun DownloadScreen(
 fun DownloadAppBar(
     title: String,
     onNavIconClick: () -> Unit,
-    onDownloadConfirm: (Int) -> Unit,
+    onDownloadConfirm: (String) -> String?,
 ) {
     TopAppBar(
         title = {
