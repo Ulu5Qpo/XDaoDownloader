@@ -16,8 +16,8 @@ android {
         applicationId = appApplicationId.get()
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 3
+        versionName = "1.0.2"
 
         buildConfigField("String", "API_BASE_URL", "\"https://api.nmb.best/\"")
         buildConfigField("String", "IMAGE_BASE_URL", "\"https://image.nmb.best/\"")

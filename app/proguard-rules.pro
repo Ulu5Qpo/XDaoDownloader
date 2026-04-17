@@ -21,13 +21,34 @@
 #-renamesourcefileattribute SourceFile
 
 # Keep generic signatures and annotations used by Retrofit and Gson.
--keepattributes Signature,RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault
+# Retrofit also needs InnerClasses and EnclosingMethod so generic return types
+# on suspend API methods are still visible after R8 optimization.
+-keepattributes Signature,InnerClasses,EnclosingMethod,RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault
 
 # Retrofit service interfaces are created reflectively.
 -keep interface com.example.xddemo.network.** { *; }
 
+# Keep Retrofit HTTP service definitions compatible with R8 full mode.
+-keepclassmembers,allowshrinking,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+
+-if interface * { @retrofit2.http.* <methods>; }
+-keep,allowobfuscation interface <1>
+
+-if interface * { @retrofit2.http.* <methods>; }
+-keep,allowobfuscation interface * extends <1>
+
+# Suspend functions depend on Continuation generic signatures at runtime.
+-keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
+
 # Keep response models used by Gson deserialization.
 -keep class com.example.xddemo.data.model.** { *; }
+
+# Keep fields that Gson reads reflectively.
+-keepclassmembers,allowobfuscation class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
 
 # Keep Room database, DAO interfaces, and entity models.
 -keep class * extends androidx.room.RoomDatabase
@@ -45,3 +66,4 @@
 -dontwarn kotlin.Unit
 -dontwarn kotlin.KotlinNothingValueException
 -dontwarn kotlinx.coroutines.**
+-dontwarn retrofit2.**
