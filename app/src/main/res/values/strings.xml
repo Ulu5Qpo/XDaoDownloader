@@ -43,4 +43,7 @@
     <string name="error_network">网络错误</string>
     <string name="error_unknown">未知错误</string>
     <string name="reply_text_copied">已复制回复内容</string>
+    <string name="image_save_success">图片已保存到 Pictures/chaDao_pic/%1$s</string>
+    <string name="image_save_failed">图片保存失败</string>
+    <string name="image_save_permission_denied">未授予存储权限，无法保存图片</string>
 </resources>
