@@ -29,7 +29,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import com.example.xddemo.BuildConfig
@@ -73,6 +75,28 @@ fun ReplyCard(
                     modifier = Modifier.padding(end = 8.dp)
                 )
 
+            }
+            if (replyEntity.title != "无标题" || replyEntity.name != "无名氏") {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                ) {
+                    if (replyEntity.title != "无标题") {
+                        Text(
+                            text = replyEntity.title,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    if (replyEntity.name != "无名氏") {
+                        Text(
+                            text = replyEntity.name,
+                            fontSize = 15.sp,
+                            color = Color.Gray,
+                        )
+                    }
+                }
             }
             Row(
                 modifier = Modifier
