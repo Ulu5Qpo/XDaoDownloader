@@ -149,7 +149,14 @@ fun ReplyWithHeadScreen(
     }
 
     LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex / 19 + 1 }
+        snapshotFlow {
+            val firstVisibleItemIndex = listState.firstVisibleItemIndex
+            if (firstVisibleItemIndex <= 19) {
+                1
+            } else {
+                (firstVisibleItemIndex - 1) / 19 + 1
+            }
+        }
             .distinctUntilChanged() // 仅在页面数发生变化时触发
             .collect { newPage ->
                 if (curPage != newPage) {
@@ -169,7 +176,7 @@ fun ReplyWithHeadScreen(
                 totalPage = totalPage,
                 onPageSelect = { selectedPage ->
                     val safePage = selectedPage.coerceIn(1, totalPage)
-                    val targetIndex = if (filteredReplies.isEmpty()) 0 else (safePage - 1) * 19 + 1
+                    val targetIndex = if (safePage == 1) 0 else (safePage - 1) * 19 + 1
                     scope.launch { listState.scrollToItem(targetIndex) }
                     curPage = safePage
                 },
